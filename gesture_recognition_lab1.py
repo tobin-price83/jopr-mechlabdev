@@ -98,20 +98,20 @@ while(cap.isOpened()):
 
     # define actions required
     if count_defects == 0:
-	cv2.putText(img,"Zero fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    	GPIO.output(led1,GPIO.LOW)
-	GPIO.output(led2,GPIO.LOW)
-	GPIO.output(led3,GPIO.LOW)
+    cv2.putText(img,"Zero fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        GPIO.output(led1,GPIO.LOW)
+    GPIO.output(led2,GPIO.LOW)
+    GPIO.output(led3,GPIO.LOW)
     elif count_defects == 1:
         cv2.putText(img,"This means that we could detect 1 finger", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-	GPIO.output(led1,GPIO.HIGH)
+    GPIO.output(led1,GPIO.HIGH)
     elif count_defects == 2:
         str = "This means that we could detect 2 fingers"
         cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
-	GPIO.output(led2,GPIO.HIGH)
+    GPIO.output(led2,GPIO.HIGH)
     elif count_defects == 3:
         cv2.putText(img,"This means that we could detect 3 fingers", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-	GPIO.output(led3,GPIO.HIGH)
+    GPIO.output(led3,GPIO.HIGH)
     elif count_defects == 4:
         cv2.putText(img,"This means that we could detect 4 fingers", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     else:
@@ -126,5 +126,5 @@ while(cap.isOpened()):
     k = cv2.waitKey(10)
     if k == 27:
         GPIO.cleanup()
-	break
+    break
 
