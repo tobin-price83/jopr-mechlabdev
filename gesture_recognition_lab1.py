@@ -6,26 +6,32 @@ import RPi.GPIO as GPIO
 
 
 # Set up the GPIO pins for use
-GPIO.setmode(GPIO.BOARD)
+GPIO.setmode(GPIO.BCM)
 led1 = 17
 led2 = 27
 led3 = 22
 
+GPIO.setup(led1, GPIO.OUT)
+GPIO.setup(led2, GPIO.OUT)
+GPIO.setup(led3, GPIO.OUT)
 
 cap = cv2.VideoCapture(0)
 while(cap.isOpened()):
     # read image
     ret, img = cap.read()
-
+    
+    hiC = 350
+    loC = 100
     # get hand data from the rectangle sub window on the screen
-    cv2.rectangle(img, (300,300), (100,100), (0,255,0),0)
-    crop_img = img[100:300, 100:300]
+    cv2.rectangle(img, (hiC,hiC), (loC,loC), (0,255,0),0)
+    crop_img = img[loC:hiC, loC:hiC]
 
     # convert to grayscale
     grey = cv2.cvtColor(crop_img, cv2.COLOR_BGR2GRAY)
 
+    blur = 5
     # applying gaussian blur
-    value = (35, 35)
+    value = (blur, blur)
     blurred = cv2.GaussianBlur(grey, value, 0)
 
     # thresholding: Otsu's Binarization method
@@ -98,33 +104,39 @@ while(cap.isOpened()):
 
     # define actions required
     if count_defects == 0:
-    cv2.putText(img,"Zero fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img,"0 fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
         GPIO.output(led1,GPIO.LOW)
-    GPIO.output(led2,GPIO.LOW)
-    GPIO.output(led3,GPIO.LOW)
+        GPIO.output(led2,GPIO.LOW)
+        GPIO.output(led3,GPIO.LOW)
     elif count_defects == 1:
-        cv2.putText(img,"This means that we could detect 1 finger", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    GPIO.output(led1,GPIO.HIGH)
+        cv2.putText(img,"1 finger detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        GPIO.output(led1,GPIO.HIGH)
+        GPIO.output(led2,GPIO.LOW)
+        GPIO.output(led3,GPIO.LOW)
     elif count_defects == 2:
-        str = "This means that we could detect 2 fingers"
+        str = "2 fingers detected"
         cv2.putText(img, str, (5, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, 2)
-    GPIO.output(led2,GPIO.HIGH)
+        GPIO.output(led2,GPIO.HIGH)
+        GPIO.output(led1,GPIO.LOW)
+        GPIO.output(led3,GPIO.LOW)
     elif count_defects == 3:
-        cv2.putText(img,"This means that we could detect 3 fingers", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
-    GPIO.output(led3,GPIO.HIGH)
+        cv2.putText(img,"3 fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        GPIO.output(led3,GPIO.HIGH)
+        GPIO.output(led1,GPIO.LOW)
+        GPIO.output(led2,GPIO.LOW)
     elif count_defects == 4:
-        cv2.putText(img,"This means that we could detect 4 fingers", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
+        cv2.putText(img,"4 fingers detected", (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
     else:
-        cv2.putText(img,"This means an entire hand", (50, 50),\
+        cv2.putText(img,"5 fingers detected", (50, 50),\
                     cv2.FONT_HERSHEY_SIMPLEX, 2, 2)
 
     # show appropriate images in windows
     cv2.imshow('Gesture', img)
     all_img = np.hstack((drawing, crop_img))
-    cv2.imshow('Contours', all_img)
+    cv2.imshow('Contours', all_img) #********** CAN PUT BACK IN TO VIEW
 
     k = cv2.waitKey(10)
     if k == 27:
         GPIO.cleanup()
-    break
+        break
 
